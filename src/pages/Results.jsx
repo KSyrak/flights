@@ -1,5 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import FlightList from '../components/FlightList';
+
 export default function Results() {
     const [searchParams] = useSearchParams();
     const from = searchParams.get('from');
@@ -24,13 +26,7 @@ export default function Results() {
     return (
         <div>
             <h2>Flights from {from} to {to}</h2>
-            <ul>
-                {flights.map((flight) => (
-                    <li key={flight.id}>
-                        {flight.airline} - ${flight.price}
-                    </li>
-                ))}
-            </ul>
+            <FlightList flights={flights} />
         </div>
     );
 }
