@@ -2,6 +2,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import FlightList from '../components/FlightList';
 import NoResults from '../components/NoResults';
+import Home from './Home'
+import { Link } from 'react-router-dom';
+
 
 export default function Results() {
     const [searchParams] = useSearchParams();
@@ -23,9 +26,14 @@ export default function Results() {
             });
     }, [from, to]);
     if (isLoading) return <p>Loading flights...</p>;
-    if (flights.length === 0) return <NoResults from={from} to={to} /> ;
+    if (flights.length === 0) return <NoResults from={from} to={to} />;
     return (
+
         <div>
+            <Link to="/">
+                <button>Back to Search</button>
+            </Link>
+
             <h2>Flights from {from} to {to}</h2>
             <FlightList flights={flights} />
         </div>
