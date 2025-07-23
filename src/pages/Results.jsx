@@ -1,39 +1,48 @@
-import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { gql, useQuery } from '@apollo/client';
 import FlightList from '../components/FlightList';
 import NoResults from '../components/NoResults';
-import Home from './Home'
-import { Link } from 'react-router-dom';
 
+const GET_FLIGHTS = gql`
+  query GetFlights($from: String, $to: String) {
+    flights(from: $from, to: $to) {
+      id
+      from
+      to
+      price
+      airline
+      departureTime
+    }
+  }
+`;
 
 export default function Results() {
     const [searchParams] = useSearchParams();
     const from = searchParams.get('from');
     const to = searchParams.get('to');
-    const [flights, setFlights] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-        fetch('/src/data/flights.json')
-            .then((res) => res.json())
-            .then((data) => {
-                const results = data.filter(
-                    (flight) =>
-                        flight.from.toLowerCase() === from.toLowerCase() &&
-                        flight.to.toLowerCase() === to.toLowerCase()
-                );
-                setFlights(results);
-                setIsLoading(false);
-            });
-    }, [from, to]);
-    if (isLoading) return <p>Loading flights...</p>;
-    if (flights.length === 0) return <NoResults from={from} to={to} />;
-    return (
 
+    if (!from || !to) {
+        return <p>Waiting for search parameters...</p>;
+    }
+
+    const { loading, error, data } = useQuery(GET_FLIGHTS, {
+        variables: { from, to },
+    });
+
+    if (loading) return <p>Loading flights...</p>;
+    if (error) return <p>Error loading flights.</p>;
+
+    const flights = data?.flights || [];
+
+    if (flights.length === 0) {
+        return <NoResults from={from} to={to} />;
+    }
+
+    return (
         <div>
             <Link to="/">
                 <button>Back to Search</button>
             </Link>
-
             <h2>Flights from {from} to {to}</h2>
             <FlightList flights={flights} />
         </div>
