@@ -4,10 +4,12 @@ import { useParams } from 'react-router-dom';
 function FlightDetail() {
     const { id } = useParams();
     const [flight, setFlight] = useState(null);
+    const api = import.meta.env.VITE_API_URL;
+
 
     useEffect(() => {
         const fetchFlight = async () => {
-            const res = await fetch(`http://localhost:4000/flights/${id}`, {
+            const res = await fetch(`${api}/flights/${id}`, {
                 credentials: 'include', 
             });
 
